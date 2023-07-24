@@ -110,4 +110,32 @@ app.get('/editoriales', async(req, res) => {
 }
 });
 
+app.get('/libros/descripcion', async(req, res) => {
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+    console.log(jwtData);
+  
+    con.query(/*sql */ `SELECT l.titulo, l.id_estado, l.isbn FROM libro AS l`, (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta", err);
+            res.status(500).send("Error al ejecutar la consulta");
+            return;
+        }
+
+    console.log("GET editorial");
+    res.send(JSON.stringify(data));
+    console.log(data);
+})  
+}catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+}
+});
+
 export default app;
