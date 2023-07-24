@@ -1,6 +1,5 @@
 import express from 'express';
-import app2 from './routes/utilidades.js';
-import app from './routes/PostTables.js'
+import app from './routes/endpoints.js'
 import dotenv from 'dotenv';
 dotenv.config();
 const appExpress = express();
