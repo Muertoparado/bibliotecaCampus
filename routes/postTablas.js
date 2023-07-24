@@ -4,6 +4,7 @@ import validacionCategoria from '../middleware/validacionCategoria.js'
 import mysql from 'mysql2';
 import validacionEditorial from '../middleware/validacionEditorial.js';
 import validacionEstado from '../middleware/validacionEstado.js';
+import validacionAutor from '../middleware/validacionAutor.js';
 
 let con= undefined;
 const app2 = Router();
@@ -110,7 +111,37 @@ app2.post('/estado/add', validacionEstado, async(req,res)=>{
             return;
         }
 
-    console.log("post editorial");
+    console.log("post estado libro");
+    res.send(JSON.stringify(data));
+    console.log(data);
+    })
+} catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+} 
+    
+});
+
+app2.post('/autor/add', validacionAutor, async(req,res)=>{
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+
+    const {id_autor, nombre, apellido, nacionalidad}=req.body
+    const datos={id_autor, nombre, apellido, nacionalidad};
+    console.log(datos);
+    con.query(/*sql */ `INSERT INTO autor SET ?`,[datos], (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta de inserción: ", err);
+            res.status(500).send("Error al ejecutar la consulta de inserción");
+            return;
+        }
+
+    console.log("post autor");
     res.send(JSON.stringify(data));
     console.log(data);
     })
