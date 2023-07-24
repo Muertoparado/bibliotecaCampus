@@ -319,5 +319,35 @@ app.get('/libros/:autor', async(req, res) => {
 }
 });
 
+app.get('/categoria/:cat', async(req, res) => {
+    const { cat } = req.params;
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+    console.log(jwtData);
+  
+    con.query(/*sql */ `SELECT * FROM libro WHERE id_categoria=?
+    `,[cat], (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta", err);
+            res.status(500).send("Error al ejecutar la consulta");
+            return;
+        }
+
+    console.log("GET categoria por id ");
+    res.send(JSON.stringify(data));
+    console.log(data);
+})  
+}catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+}
+});
+
 
 export default app;
