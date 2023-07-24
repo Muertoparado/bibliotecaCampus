@@ -6,6 +6,7 @@ import validacionEditorial from '../middleware/validacionEditorial.js';
 import validacionEstado from '../middleware/validacionEstado.js';
 import validacionAutor from '../middleware/validacionAutor.js';
 import validacionUsuario from '../middleware/validacionUsuario.js';
+import validacionReserva from '../middleware/validacionReserva.js';
 
 let con= undefined;
 const app2 = Router();
@@ -181,4 +182,35 @@ app2.post('/usuario/add', validacionUsuario, async(req,res)=>{
 } 
     
 });
+
+app2.post('/reservas/add', validacionReserva, async(req,res)=>{
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+
+    const {id_reserva, id_usuario, id_libro, fecha_reserva, fecha_reserva_fin, estado}=req.body
+    const datos={id_reserva, id_usuario, id_libro, fecha_reserva, fecha_reserva_fin, estado};
+    console.log(datos);
+    con.query(/*sql */ `INSERT INTO reserva SET ?`,[datos], (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta de inserción: ", err);
+            res.status(500).send("Error al ejecutar la consulta de inserción");
+            return;
+        }
+
+    console.log("post autor");
+    res.send(JSON.stringify(data));
+    console.log(data);
+    })
+} catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+} 
+    
+});
+
 export default app2;
