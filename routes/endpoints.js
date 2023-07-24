@@ -288,4 +288,36 @@ app.get('/usuarios/correos', async(req, res) => {
     res.status(401).send({ message: "Token authentication failed :(" });
 }
 });
+
+app.get('/libros/:autor', async(req, res) => {
+    const { autor } = req.params;
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+    console.log(jwtData);
+  
+    con.query(/*sql */ `SELECT * FROM autor WHERE nombre=?
+    `,[autor], (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta", err);
+            res.status(500).send("Error al ejecutar la consulta");
+            return;
+        }
+
+    console.log("GET libros autor especifico nombre");
+    res.send(JSON.stringify(data));
+    console.log(data);
+})  
+}catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+}
+});
+
+
 export default app;
