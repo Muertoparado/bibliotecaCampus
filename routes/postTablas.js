@@ -3,6 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import validacionCategoria from '../middleware/validacionCategoria.js'
 import mysql from 'mysql2';
 import validacionEditorial from '../middleware/validacionEditorial.js';
+import validacionEstado from '../middleware/validacionEstado.js';
 
 let con= undefined;
 const app2 = Router();
@@ -73,6 +74,36 @@ app2.post('/editorial/add', validacionEditorial, async(req,res)=>{
     const datos={id_editorial, nombre, direccion, telefono};
     console.log(datos);
     con.query(/*sql */ `INSERT INTO editorial SET ?`,[datos], (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta de inserción: ", err);
+            res.status(500).send("Error al ejecutar la consulta de inserción");
+            return;
+        }
+
+    console.log("post editorial");
+    res.send(JSON.stringify(data));
+    console.log(data);
+    })
+} catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+} 
+    
+});
+
+app2.post('/estado/add', validacionEstado, async(req,res)=>{
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+
+    const {id_estado, nombre, descripcion}=req.body
+    const datos={id_estado, nombre, descripcion};
+    console.log(datos);
+    con.query(/*sql */ `INSERT INTO estado_libro SET ?`,[datos], (err,data,fil)=>{
         if (err) {
             console.error("Error al ejecutar la consulta de inserción: ", err);
             res.status(500).send("Error al ejecutar la consulta de inserción");
