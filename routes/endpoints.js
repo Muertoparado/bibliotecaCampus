@@ -229,4 +229,63 @@ app.get('/librosdisponibles', async(req, res) => {
 }
 });
 
+app.get('/librosprestados', async(req, res) => {
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+    console.log(jwtData);
+  
+    con.query(/*sql */ `SELECT a.nombre, p.fecha_devolucion FROM prestamo AS p
+    INNER JOIN autor AS a ON p.id_usuario
+    `, (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta", err);
+            res.status(500).send("Error al ejecutar la consulta");
+            return;
+        }
+
+    console.log("GET libros prestados");
+    res.send(JSON.stringify(data));
+    console.log(data);
+})  
+}catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+}
+});
+
+
+app.get('/usuarios/correos', async(req, res) => {
+    const { authorization } = req.headers;
+    if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
+
+    try {
+        const encoder = new TextEncoder();
+        const jwtData = await jwtVerify(
+        authorization,
+        encoder.encode(process.env.JWT_PRIVATE_KEY)
+    );
+    console.log(jwtData);
+  
+    con.query(/*sql */ `SELECT u.nombre, u.email FROM usuario AS u
+    `, (err,data,fil)=>{
+        if (err) {
+            console.error("Error al ejecutar la consulta", err);
+            res.status(500).send("Error al ejecutar la consulta");
+            return;
+        }
+
+    console.log("GET usuarios correos");
+    res.send(JSON.stringify(data));
+    console.log(data);
+})  
+}catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+}
+});
 export default app;
