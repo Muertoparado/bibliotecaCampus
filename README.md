@@ -1,6 +1,6 @@
 # endpoinst 
 El presente proyecto se realiza para la optimizacion de una biblioteca, en estos endpoints basmos la utilidad de herramientas de la plataforma, para la carga de datos se conserva el siguiente formato 
-***### app2.post(/{nombre de la tabla/add***
+### app2.post(/{nombre de la tabla/add
 
 
 ***endpoints utilidades***
@@ -44,3 +44,6 @@ Gabriel García
 ### app.get('/categoria/:cat'
 Obtener los libros de cierta categoría (ejemplo: Novela).
 ---
+
+ ***Nota***
+Por favor, asegúrate de que el servidor y la base de datos estén configurados correctamente antes de realizar las pruebas con estos endpoints. También es importante tener en cuenta que los tokens JWT generados con el endpoint GET {server}/app/ y el /app2 tienen una vigencia de 1 hora.
