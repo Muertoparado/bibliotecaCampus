@@ -27,7 +27,8 @@ app.get("/", async (req,res)=>{
     res.send(({jwt}));
 });
 
-app.get('/autor/nac', async (req,res)=>{
+
+app.get('/autor/nac', async(req, res) => {
     const { authorization } = req.headers;
     if (!authorization) return res.status(401).send({ message: "Unauthorized :(" });
 
@@ -38,21 +39,23 @@ app.get('/autor/nac', async (req,res)=>{
         encoder.encode(process.env.JWT_PRIVATE_KEY)
     );
     console.log(jwtData);
-    con.query(/*sql */ `SELECT * FROM autor`, (err,data,fil)=>{
+  
+    con.query(/*sql */ `SELECT a.nombre, a.nacionalidad FROM autor AS a`, (err,data,fil)=>{
         if (err) {
-            console.error("Error al ejecutar la consulta de inserción: ", err);
-            res.status(500).send("Error al ejecutar la consulta de inserción");
+            console.error("Error al ejecutar la consulta", err);
+            res.status(500).send("Error al ejecutar la consulta");
             return;
         }
 
-    console.log("obtener autores nacionalidad");
+    console.log("GET autores y su nacionalidad");
     res.send(JSON.stringify(data));
     console.log(data);
-    })
-    }catch (error) {
-        res.status(401).send({ message: "Token authentication failed :(" });
-    }
+})  
+}catch (error) {
+    res.status(401).send({ message: "Token authentication failed :(" });
+}
 });
+
 
 app.get('/categorias', async(req, res) => {
     const { authorization } = req.headers;
@@ -137,5 +140,6 @@ app.get('/libros/descripcion', async(req, res) => {
     res.status(401).send({ message: "Token authentication failed :(" });
 }
 });
+
 
 export default app;
